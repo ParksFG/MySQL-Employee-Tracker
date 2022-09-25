@@ -2,7 +2,7 @@ const inquirer = require('inquirer');
 const mysql = require("mysql2");
 require('console.table');
 
-// Main App Questions
+// Main App Questions.
 const actions = {
     viewAllEmployees: "View All Employees.",
     viewAllDepartments: "View All Departments.",
@@ -14,7 +14,7 @@ const actions = {
     quit: "Quit."
 }
 
-// Questions for adding employee
+// Questions for adding employee.
 const addEmployeeActions = [
     {
         type: 'input',
@@ -39,7 +39,7 @@ const addEmployeeActions = [
     }
 ]
 
-// Questions for adding role
+// Questions for adding role.
 const addRoleActions = [
     {
         type: 'input',
@@ -56,6 +56,15 @@ const addRoleActions = [
         name: 'department_id',
         message: 'Enter the department ID this role belongs to.',
         default: '1'
+    }
+]
+
+// Questions for adding department.
+const addDepartmentActions = [
+    {
+        type: 'input',
+        name: 'depName',
+        message: `Enter the new department's name.`
     }
 ]
 
@@ -143,7 +152,7 @@ function viewAllEmployees() {
 };
 
 function viewAllDepartments() {
-    const query = `SELECT department.depName as Departments FROM department`;
+    const query = `SELECT department.id AS ID, department.depName AS Departments FROM department ORDER BY department.id`;
     db.query(query, (err, res) => {
         console.log(`\n`);
         console.table(res);
@@ -153,10 +162,11 @@ function viewAllDepartments() {
 };
 
 function viewAllRoles() {
-    const query = `SELECT role.title as 'Role Name', role.salary as Salary, department.depName AS Department
+    const query = `SELECT role.id AS ID, role.title as 'Role Name', role.salary as Salary, department.depName AS Department
     FROM role
     JOIN department
-    ON role.department_id = department.id;`;
+    ON role.department_id = department.id
+    ORDER BY role.id`;
     db.query(query, (err, res) => {
         console.log(`\n`);
         console.table(res);
@@ -189,6 +199,21 @@ function addRole() {
             db.query(newRole, (err, res) => {
                 console.log(`\n`);
                 console.log(`New role added.`);
+                console.log(`\n`);
+                appQuestions();
+            });
+        });
+};
+
+function addDepartment() {
+    inquirer
+        .prompt(addDepartmentActions)
+        .then((answers) => {
+            const newDep = `INSERT INTO department (depName)
+            VALUES ("` + answers.depName + `")`;
+            db.query(newDep, (err, res) => {
+                console.log(`\n`);
+                console.log(`New department added.`);
                 console.log(`\n`);
                 appQuestions();
             });
