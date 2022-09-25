@@ -2,6 +2,25 @@ const inquirer = require('inquirer');
 const mysql = require("mysql2");
 require('console.table');
 
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: 'root',
+        password: '',
+        database: 'employees_db'
+    },
+    console.log('Connected to the employees_db database')  
+);
+
+const dbPromise = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: 'root',
+        password: '',
+        database: 'employees_db'
+    },
+).promise();
+
 // Main App Questions.
 const actions = {
     viewAllEmployees: "View All Employees.",
@@ -12,6 +31,21 @@ const actions = {
     addDepartment: "Add a Department.",
     updateEmployeeRole: "Update an Employee's Role.",
     quit: "Quit."
+}
+
+// Grabbing the roles
+const roleChoices = async () => {
+    const query = `SELECT id AS value, title as name FROM role;`;
+    const roles = await dbPromise.query(query);
+    return roles[0];
+}
+
+// Grabbing the employees
+const employeeChoices = async () => {
+    const query = `SELECT id AS value, CONCAT(employee.last_name, ', ', employee.first_name) AS name FROM employee;`;
+    const employees = await dbPromise.query(query);
+    employees[0].push({ value: 0, name: 'N/A'});
+    return employees[0];
 }
 
 // Questions for adding employee.
@@ -27,17 +61,26 @@ const addEmployeeActions = [
         message: `Enter the employee's last name.`
     },
     {
-        type: 'number',
+        type: 'list',
         name: 'roleID',
-        message: 'Enter the role ID for this employee.'
+        message: 'Select the role this employee belongs to.',
+        choices: roleChoices
     },
     {
-        type: 'number',
+        type: 'list',
         name: 'managerID',
-        message: `Enter the ID of this employee's manager. Leave blank if they don't have a manager.`,
-        default: 'NULL'
+        message: `Select this employee's Manager`,
+        choices: employeeChoices
     }
 ]
+
+// Grabbing the department.
+const departmentChoices = async () => {
+    const query = `SELECT id AS value, depName as name FROM department;`;
+    const departments = await dbPromise.query(query);
+    return departments[0];
+}
+
 
 // Questions for adding role.
 const addRoleActions = [
@@ -52,10 +95,10 @@ const addRoleActions = [
         message: 'Enter the salary for this role.'
     },
     {
-        type: 'number',
+        type: 'list',
         name: 'department_id',
-        message: 'Enter the department ID this role belongs to.',
-        default: '1'
+        message: 'Select the department this role belongs to.',
+        choices: departmentChoices
     }
 ]
 
@@ -67,16 +110,6 @@ const addDepartmentActions = [
         message: `Enter the new department's name.`
     }
 ]
-
-const db = mysql.createConnection(
-    {
-        host: 'localhost',
-        user: 'root',
-        password: '',
-        database: 'employees_db'
-    },
-    console.log('Connected to the employees_db database')  
-);
 
 function appQuestions() {
     inquirer
