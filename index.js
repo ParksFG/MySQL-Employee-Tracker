@@ -13,6 +13,30 @@ const actions = {
     quit: "Quit."
 }
 
+const addEmployeeActions = [
+    {
+        type: 'input',
+        name: 'fName',
+        message: `Enter the employee's first name.`
+    },
+    {
+        type: 'input',
+        name: 'lName',
+        message: `Enter the employee's last name.`
+    },
+    {
+        type: 'number',
+        name: 'roleID',
+        message: 'Enter the role ID for this employee.'
+    },
+    {
+        type: 'number',
+        name: 'managerID',
+        message: `Enter the ID of this employee's manager. Leave blank if they don't have a manager.`,
+        default: 'NULL'
+    }
+]
+
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -117,4 +141,21 @@ function viewAllRoles() {
         console.log(`\n`);
         appQuestions();
     })
+};
+
+function addEmployee() {
+    inquirer
+        .prompt(addEmployeeActions)
+        .then((answers) => {
+            const newEmployee = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+            VALUES ("` + answers.fName + `", "` + answers.lName + `", ` + answers.roleID + `, ` + answers.managerID + `)`;
+            console.log(newEmployee)
+            db.query(newEmployee, (err, res) => {
+                console
+                console.log(`\n`);
+                console.log(`New employee added.`);
+                console.log(`\n`);
+                appQuestions();
+            });
+        });
 };
