@@ -4,8 +4,8 @@ require('console.table');
 
 const actions = {
     viewAllEmployees: "View All Employees.",
-    viewByDepartment: "View Employees by Department.",
-    viewByManager: "View Employeese by Manager.",
+    viewAllDepartments: "View All Departments.",
+    viewAllRoles: "View All Roles.",
     addEmployee: "Add an Employee.",
     addRole: "Add a Role.",
     addDepartment: "Add a Department.",
@@ -31,8 +31,8 @@ function appQuestions() {
             message: 'What do you want to do?',
             choices: [
                 actions.viewAllEmployees,
-                actions.viewByDepartment,
-                actions.viewByManager,
+                actions.viewAllDepartments,
+                actions.viewAllRoles,
                 actions.addEmployee,
                 actions.addRole,
                 actions.addDepartment,
@@ -46,12 +46,12 @@ function appQuestions() {
                     viewAllEmployees();
                     break;
 
-                case actions.viewByDepartment:
-                    viewByDepartment();
+                case actions.viewAllDepartments:
+                    viewAllDepartments();
                     break;
 
-                case actions.viewByManager:
-                    viewByManager();
+                case actions.viewAllRoles:
+                    viewAllRoles();
                     break;
 
                 case actions.addEmployee:
@@ -91,7 +91,30 @@ function viewAllEmployees() {
     db.query(query, (err, res) => {
         console.log(`\n`);
         console.table(res);
+        console.log(`\n`);
         appQuestions();
     })
+};
 
-}
+function viewAllDepartments() {
+    const query = `SELECT department.depName as Departments FROM department`;
+    db.query(query, (err, res) => {
+        console.log(`\n`);
+        console.table(res);
+        console.log(`\n`);
+        appQuestions();
+    })
+};
+
+function viewAllRoles() {
+    const query = `SELECT role.title as 'Role Name', role.salary as Salary, department.depName AS Department
+    FROM role
+    JOIN department
+    ON role.department_id = department.id;`;
+    db.query(query, (err, res) => {
+        console.log(`\n`);
+        console.table(res);
+        console.log(`\n`);
+        appQuestions();
+    })
+};
