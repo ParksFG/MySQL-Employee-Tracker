@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const mysql = require("mysql2");
 require('console.table');
 
+// Main App Questions
 const actions = {
     viewAllEmployees: "View All Employees.",
     viewAllDepartments: "View All Departments.",
@@ -13,6 +14,7 @@ const actions = {
     quit: "Quit."
 }
 
+// Questions for adding employee
 const addEmployeeActions = [
     {
         type: 'input',
@@ -34,6 +36,26 @@ const addEmployeeActions = [
         name: 'managerID',
         message: `Enter the ID of this employee's manager. Leave blank if they don't have a manager.`,
         default: 'NULL'
+    }
+]
+
+// Questions for adding role
+const addRoleActions = [
+    {
+        type: 'input',
+        name: 'title',
+        message: `Enter the role's title.`
+    },
+    {
+        type: 'number',
+        name: 'salary',
+        message: 'Enter the salary for this role.'
+    },
+    {
+        type: 'number',
+        name: 'department_id',
+        message: 'Enter the department ID this role belongs to.',
+        default: '1'
     }
 ]
 
@@ -149,11 +171,24 @@ function addEmployee() {
         .then((answers) => {
             const newEmployee = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
             VALUES ("` + answers.fName + `", "` + answers.lName + `", ` + answers.roleID + `, ` + answers.managerID + `)`;
-            console.log(newEmployee)
             db.query(newEmployee, (err, res) => {
-                console
                 console.log(`\n`);
                 console.log(`New employee added.`);
+                console.log(`\n`);
+                appQuestions();
+            });
+        });
+};
+
+function addRole() {
+    inquirer
+        .prompt(addRoleActions)
+        .then((answers) => {
+            const newRole = `INSERT INTO role (title, salary, department_id)
+            VALUES ("` + answers.title + `", ` + answers.salary + `, ` + answers.department_id + ')';
+            db.query(newRole, (err, res) => {
+                console.log(`\n`);
+                console.log(`New role added.`);
                 console.log(`\n`);
                 appQuestions();
             });
