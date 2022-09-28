@@ -21,6 +21,8 @@ This is an employee tracker application made using node and MySQL.  I made this 
 
 After cloning the repo, run `"npm i"` to get the dependancies. Next login to your sql server. Run `"SOURCE db/schema.sql"` and `"SOURCE db/seeds.sql"` from the root folder.  Finally just run `"node index"` to open the app.
 
+[Video Guide](https://watch.screencastify.com/v/gbruMDS1yJcZLh6JU3WQ)
+
 ## Usage
 
 Used for keeping track of departments, roles, and employees in your company.
